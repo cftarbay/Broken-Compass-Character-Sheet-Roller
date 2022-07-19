@@ -121,18 +121,23 @@ export class AppComponent {
       return;
     }
     localStorage.setItem("character", JSON.stringify(this.character));
+    alert("Your character has been saved successfully")
   }
 
   load(){
     if(localStorage.getItem("character")){
       this.character = JSON.parse(localStorage.getItem("character")!);
+      for(let i=0; i<this.character.tags.length; i++){
+        this.tags[i] = this.character.tags[i];
+      }
     }
   }
 
   clear(){
-    if(confirm("really clear?")){
+    if(confirm("Do you really want to clear the sheet?")){
       localStorage.clear();
       this.initCharacter();
+      this.tags = ["",""]
     }
   }
 
