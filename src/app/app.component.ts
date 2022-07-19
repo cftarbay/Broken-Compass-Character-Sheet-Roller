@@ -212,7 +212,7 @@ export class AppComponent {
     this.results = [];
     let res = this.service.rollDice(this.dicepool);
     for(let i=0; i<res.length; i++){
-      this.results.push("/assets/img/"+res[i]+".jpg");
+      this.results.push("assets/img/"+res[i]+".jpg");
     }
   }
 
