@@ -1,27 +1,9 @@
-# BrokenCompassWeb
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.5.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+# Broken Compass RPG Online Character Sheet and Roller
+## What is it?
+This app is a character sheet template for the Broken Compass TTRPG, built on Angular and Bootstrap. The sheet can easily be edited and saved to your local browser session. A roller for all the basic skills is also provided.
+## Why?
+To my knowledge, no digital toolset exists for this ruleset, and my table is trying it out :)
+## What can it do?
+All facets of character creation are included, and though there's no guided wizard, the process should be relatively simple. Important fields are automatically generated from chosen tags, but can also be manually overridden. The green skill name buttons in the left column open up a modal where the skill can be rolled for and results displayed, though you'll have to identify success or failure manually.
+## Any future plans for this app?
+Maybe. Of course, making it look nicer would be great, and fixing the layout on smaller screen sizes would be a good idea. I could also add the ability to purely roll a character randomly based on the book's tables, and a way to evaluate successes rolled instead of just displaying the list of dice for the user to interpret. As is, though, barebones functionality should be covered.

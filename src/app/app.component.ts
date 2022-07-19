@@ -117,7 +117,7 @@ export class AppComponent {
 
   save(){
     if(!this.character.tags[0] || !this.character.tags[1]){
-      alert("must have 2 tags selected to save");
+      alert("Please select two tags for your character before saving");
       return;
     }
     localStorage.setItem("character", JSON.stringify(this.character));
