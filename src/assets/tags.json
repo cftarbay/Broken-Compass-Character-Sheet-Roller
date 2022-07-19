@@ -1,0 +1,76 @@
+[
+    {
+        "label":"Action Hero",    
+        "value":"actionhero"
+    },
+    {
+        "label":"Cheater",  
+        "value":"cheater"
+    },
+    {
+        "label":"Daredevil",    
+        "value":"daredevil"
+    },
+    {
+        "label":"Explorer",  
+        "value":"explorer"
+    },
+    {
+        "label":"Gunslinger",    
+        "value":"gunslinger"
+    },
+    {
+        "label":"Hunk",  
+        "value":"hunk"
+    },
+
+    {
+        "label":"Hunter",    
+        "value":"hunter"
+    },
+    {
+        "label":"Medic",  
+        "value":"medic"
+    },
+    {
+        "label":"Pilot",    
+        "value":"pilot"
+    },
+    {
+        "label":"Playboy/Femme Fatale",  
+        "value":"playboy"
+    },
+    {
+        "label":"Professor",    
+        "value":"professor"
+    },
+    {
+        "label":"Rebel",  
+        "value":"rebel"
+    },
+
+    {
+        "label":"Reporter",    
+        "value":"reporter"
+    },
+    {
+        "label":"Soldier",  
+        "value":"soldier"
+    },
+    {
+        "label":"Spy",    
+        "value":"spy"
+    },
+    {
+        "label":"Techie",  
+        "value":"techie"
+    },
+    {
+        "label":"Thief",    
+        "value":"thief"
+    },
+    {
+        "label":"Wingman/woman",  
+        "value":"wingman"
+    }
+]
