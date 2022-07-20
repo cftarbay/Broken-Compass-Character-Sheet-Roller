@@ -72,5 +72,9 @@
     {
         "label":"Wingman/woman",  
         "value":"wingman"
+    },
+    {
+        "label":"Custom",  
+        "value":"custom"
     }
 ]
