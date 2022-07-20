@@ -5,6 +5,8 @@ import * as tagListJson from '../assets/tags.json';
 import { Character } from './classes/character';
 import { AppService } from './app.service';
 import { Tag } from './classes/tag';
+import { PrintObj } from './classes/printobj';
+import { Inventory } from './classes/inventory';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -37,6 +39,8 @@ export class AppComponent {
   expertiseEligible: boolean = false;
   allOrNothingEligible: boolean = false;
 
+  inventory: Inventory = new Inventory();
+
   constructor(private service : AppService,
     private ref: ChangeDetectorRef){
     this.initCharacter();
@@ -45,6 +49,7 @@ export class AppComponent {
 
   initCharacter(){
     this.character = new Character();
+    this.inventory = new Inventory();
   }
 
   chooseTag(tag: string, i: number){
@@ -53,7 +58,7 @@ export class AppComponent {
       this.service.getTag(this.character.tags[i]).subscribe((tagData: Tag) =>{
         this.decrementFields(tagData.fields);
         this.decrementSkills(tagData.skills);
-        this.character.expertise = this.character.expertise?.filter(ex => tagData.expertise != ex);
+        this.inventory.expertise = this.inventory.expertise?.filter(ex => tagData.expertise != ex.name);
       })
       this.customTagNames[i] = "";
     }
@@ -61,8 +66,10 @@ export class AppComponent {
       this.service.getTag(tag).subscribe((tagData: Tag) =>{
           this.incrementFields(tagData.fields);
           this.incrementSkills(tagData.skills);
-          if(!this.character.expertise.includes(tagData.expertise))
-            this.character.expertise.push(tagData.expertise);
+          let found = false;
+          this.inventory.expertise.forEach(x => {if(tagData.expertise === x.name){found = true;}})
+          if(!found)
+            this.inventory.expertise.push({name:tagData.expertise});
       })
     }
     this.character.tags[i] = tag;
@@ -134,7 +141,8 @@ export class AppComponent {
     }
     localStorage.setItem("character", JSON.stringify(this.character));
     localStorage.setItem("customTagNames", JSON.stringify(this.customTagNames));
-    localStorage.setItem("notes", JSON.stringify(this.notes))
+    localStorage.setItem("notes", JSON.stringify(this.notes));
+    localStorage.setItem("inventory", JSON.stringify(this.inventory));
     alert("Your character has been saved successfully")
   }
 
@@ -151,6 +159,29 @@ export class AppComponent {
     if(localStorage.getItem("notes")){
       this.notes = JSON.parse(localStorage.getItem("notes")!);
     }
+    if(localStorage.getItem("inventory")){
+      this.inventory = JSON.parse(localStorage.getItem("inventory")!);
+    }
+    //if first time with inventory object, transfer from character
+    else if(localStorage.getItem("character")) {
+      this.inventory.expertise = [];
+      this.inventory.experience = [];
+      this.inventory.pockets = [];
+      this.inventory.bag = [];
+      this.inventory.backpack = [];
+      
+      this.character.expertise.forEach(ex => this.inventory.expertise.push({name:ex}));
+      this.character.experience.forEach(ex => this.inventory.experience.push({name:ex}));
+      this.character.pockets.forEach(ex => this.inventory.pockets.push({name:ex}));
+      this.character.bag.forEach(ex => this.inventory.bag.push({name:ex}));      
+      this.character.backpack.forEach(ex => this.inventory.backpack.push({name:ex}));
+
+      this.character.experience = [];
+      this.character.expertise = [];
+      this.character.bag = [];
+      this.character.backpack = [];
+      this.character.pockets = [];
+    }
   }
 
   clear(){
@@ -164,12 +195,12 @@ export class AppComponent {
   }
 
   addExpertise(){
-    if(this.character.expertise.length<6)
-      this.character.expertise.push("");
+    if(this.inventory.expertise.length<6)
+      this.inventory.expertise.push({name:""});
   }
 
   removeExpertise(i: number){
-    this.character.expertise.splice(i,1);
+    this.inventory.expertise.splice(i,1);
   }
 
   addFeeling(){
@@ -203,12 +234,12 @@ export class AppComponent {
   }
 
   removeExp(i: number){
-    this.character.experience.splice(i,1);
+    this.inventory.experience.splice(i,1);
   }
 
   addExp(){
-    if(this.character.experience.length<10)
-      this.character.experience.push("");
+    if(this.inventory.experience.length<10)
+      this.inventory.experience.push({name:""});
   }
 
   calculateDicepool(i: number,j: number){
@@ -353,6 +384,18 @@ export class AppComponent {
     this.dicepool = this.baseDicepool + this.advantage - this.disadvantage;
     if(this.dicepool>9)
       this.dicepool = 9;
+  }
+
+  print(){
+    let printObj: PrintObj = new PrintObj(this.character,this.customTagNames,this.notes,this.inventory);
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(printObj, null, 2));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    let exportName = "character-"+this.character.name.replace(/\s/g,'');
+    downloadAnchorNode.setAttribute("download", exportName + ".txt");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
   }
 
 }

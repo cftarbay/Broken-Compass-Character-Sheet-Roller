@@ -225,15 +225,15 @@
 
         <div class="col-4 fw-bold">
           Expertise
-          <div class="row" *ngFor="let ex of character.expertise; let i = index">
+          <div class="row" *ngFor="let ex of inventory.expertise; let i = index">
             <div class="col-10" >
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="character.expertise[i]"/>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="inventory.expertise[i].name"/>
           </div>
           <div class="col-2">
             <button type="button" class="btn btn-danger btn-sm" (click)="removeExpertise(i)">x</button>
           </div>
           </div>
-          <button *ngIf="character.expertise.length<6" type="button" class="btn btn-primary btn-sm" (click)="addExpertise()">Add</button>
+          <button *ngIf="inventory.expertise.length<6" type="button" class="btn btn-primary btn-sm" (click)="addExpertise()">Add</button>
         </div>
       </div>
           
@@ -335,9 +335,9 @@
               Experience & Scars
             </div>
           </div>
-          <div class="row" *ngFor="let exp of character.experience; let i=index">
+          <div class="row" *ngFor="let exp of inventory.experience; let i=index">
             <div class="col-11">
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="character.experience[i]"/>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="inventory.experience[i].name"/>
             </div>
             <div class="col-1">
               <button type="button" class="btn btn-danger btn-sm" (click)="removeExp(i)">x</button>
@@ -345,7 +345,7 @@
           </div>
           <div class="row">
             <div class="col-1">
-              <button type="button" *ngIf="character.experience.length<10" class="btn btn-primary btn-sm" (click)="addExp()">Add</button>
+              <button type="button" *ngIf="inventory.experience.length<10" class="btn btn-primary btn-sm" (click)="addExp()">Add</button>
             </div>
           </div>
           <div class="row">
@@ -361,11 +361,11 @@
         </div>
         <div class="col-3 fw-bold"> 
           Pockets
-          <input type="text" class="form-control form-control-sm" *ngFor="let item of character.pockets; let i=index" [(ngModel)]="character.pockets[i]"/>
+          <input type="text" class="form-control form-control-sm" *ngFor="let item of inventory.pockets; let i=index" [(ngModel)]="inventory.pockets[i].name"/>
           Bag
-          <input type="text" class="form-control form-control-sm" *ngFor="let item of character.bag; let i=index" [(ngModel)]="character.bag[i]"/>
+          <input type="text" class="form-control form-control-sm" *ngFor="let item of inventory.bag; let i=index" [(ngModel)]="inventory.bag[i].name"/>
           Backpack          
-          <input type="text" class="form-control form-control-sm" *ngFor="let item of character.backpack; let i=index" [(ngModel)]="character.backpack[i]"/>
+          <input type="text" class="form-control form-control-sm" *ngFor="let item of inventory.backpack; let i=index" [(ngModel)]="inventory.backpack[i].name"/>
         </div>
     </div>    
   </div>
@@ -376,6 +376,9 @@
     </div>
     <div class="col-1"> 
       <button type="button" class="btn btn-danger" (click)="clear()">Clear</button>
+    </div>
+    <div class="col-1"> 
+      <button type="button" class="btn btn-success" (click)="print()">Export</button>
     </div>
   </div>
   
