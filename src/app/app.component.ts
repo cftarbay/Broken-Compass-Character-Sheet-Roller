@@ -141,11 +141,15 @@ export class AppComponent {
   load(){
     if(localStorage.getItem("character")){
       this.character = JSON.parse(localStorage.getItem("character")!);
-      this.customTagNames = JSON.parse(localStorage.getItem("customTagNames")!);
-      this.notes = JSON.parse(localStorage.getItem("notes")!);
       for(let i=0; i<this.character.tags.length; i++){
         this.tags[i] = this.character.tags[i];
       }
+    }
+    if(localStorage.getItem("customTagNames")){
+      this.customTagNames = JSON.parse(localStorage.getItem("customTagNames")!);
+    }
+    if(localStorage.getItem("notes")){
+      this.notes = JSON.parse(localStorage.getItem("notes")!);
     }
   }
 
