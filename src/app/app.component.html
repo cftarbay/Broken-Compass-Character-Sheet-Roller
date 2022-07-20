@@ -24,8 +24,8 @@
             <input type="number" max="2" min="0" class="form-control form-control-sm" [(ngModel)]="disadvantage" (ngModelChange)="recalculatePool()"/>
           </div>
         </div>         
-        <div *ngIf="results.length>0" class="fw-bold">
-          <div class="row">  
+        <div *ngIf="results.length>0" >
+          <div class="row" class="fw-bold">  
             <div class="col-4">       
               Results
             </div>
@@ -33,8 +33,36 @@
           <span *ngFor="let res of results; let i=index">
             <img [src]="results[i]" width="35px"/>
           </span>
-
+          <div class="row">  
+            <div class="col-12"> 
+              {{successType}}
+            </div>
+          </div>
+          <div class="row" *ngIf="rerollEligible || expertiseEligible">  
+            <div class="col-2" *ngIf="rerollEligible"> 
+              <button type="button" class="btn btn-sm btn-primary" (click)="reroll()">Risk</button>
+            </div>
+            <div class="col-2" *ngIf="expertiseEligible"> 
+              <button type="button" class="btn btn-sm btn-primary" (click)="reroll()">Expertise</button>
+            </div>
+          </div>          
         </div>
+        <span *ngFor="let res of rerollResults; let i=index" style="margin-top:6px;">
+          <img [src]="rerollResults[i]" width="35px"/>
+        </span>
+        <div class="row">  
+          <div class="col-12"> 
+            {{newSuccessType}}
+          </div>
+        </div>
+        <div class="row" *ngIf="allOrNothingEligible">  
+          <div class="col-4"> 
+            <button type="button" class="btn btn-sm btn-danger" (click)="allOrNothing()">All or Nothing</button>
+          </div>
+        </div>
+        <span *ngFor="let res of allOrNothingResults; let i=index" style="margin-top:6px;">
+          <img [src]="allOrNothingResults[i]" width="35px"/>
+        </span>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelRoll()">Close</button>
@@ -66,12 +94,14 @@
         <option value="">Tag</option>
         <option *ngFor="let tag of tagsList" [value]="tag.value">{{tag.label}}</option>
       </select>
+      <input *ngIf="tags[0]==='custom'" type="text" class="form-control form-control-sm" [(ngModel)]="customTagNames[0]">
     </div>
     <div class="col-3">
       <select [(ngModel)]="tags[1]" (ngModelChange)="chooseTag($event,1)" class="form-select form-select-sm">        
         <option value="">Tag</option>
         <option *ngFor="let tag of tagsList" [value]="tag.value">{{tag.label}}</option>
       </select>
+      <input *ngIf="tags[1]==='custom'" type="text" class="form-control form-control-sm" [(ngModel)]="customTagNames[1]">
     </div>
   </div>
 
@@ -108,7 +138,7 @@
           <div class="col-7 fw-bold">
             {{field.name}}
           </div>
-          <div class="col-3">
+          <div class="col-4">
             <input type="number" class="form-control form-control-sm" min="2" max="3" (ngModelChange)="checkField($event,i)" [(ngModel)]="field.value"/>
           </div>
         </div>
@@ -118,7 +148,7 @@
           <div class="col-5">
             <button type="button" class="btn btn-sm btn-success" (click)="calculateDicepool(i,j)" data-bs-toggle="modal" data-bs-target="#exampleModal">{{skill.name}}</button>
           </div>
-          <div class="col-3">
+          <div class="col-4">
             <input type="number" class="form-control form-control-sm" min="1" max="3" (ngModelChange)="checkSkill($event,i,j)" [(ngModel)]="skill.value"/>
           </div>
         </div>
@@ -318,6 +348,16 @@
               <button type="button" *ngIf="character.experience.length<10" class="btn btn-primary btn-sm" (click)="addExp()">Add</button>
             </div>
           </div>
+          <div class="row">
+            <div class="col-3 fw-bold">
+              Notes
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <textarea type="text" class="form-control" rows="3" [(ngModel)]="notes"></textarea>
+            </div>
+          </div>
         </div>
         <div class="col-3 fw-bold"> 
           Pockets
@@ -330,13 +370,7 @@
     </div>    
   </div>
 
-  <div class="row" style="margin-bottom:10px">
-    <div class="col-12">
-      
-    </div>
-  </div>
-
-  <div class="row">
+  <div class="row" style="margin-bottom:20px; margin-top: 10px;;">
     <div class="col-1">      
       <button type="button" class="btn btn-primary" (click)="save()">Save</button>
     </div>

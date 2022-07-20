@@ -16,15 +16,26 @@ export class AppComponent {
   tagsList: any = (tagListJson as any).default;
 
   tags: string[] = ["",""]
+  customTagNames: string[] = ["",""]
   character!: Character;
+  notes: string = "";
 
   baseDicepool: number = 0;
   dicepool: number = 0;
   advantage: number = 0;
   disadvantage: number = 0;
   beingRolled: string = "";
+  successType: string = "";
+  newSuccessType: string = "";
 
   results: string[] = [];
+  rerollResults: string[] = [];
+  allOrNothingResults: string[] = [];
+  counts: number[] = [0,0,0,0,0,0];
+
+  rerollEligible: boolean = false;
+  expertiseEligible: boolean = false;
+  allOrNothingEligible: boolean = false;
 
   constructor(private service : AppService,
     private ref: ChangeDetectorRef){
@@ -44,6 +55,7 @@ export class AppComponent {
         this.decrementSkills(tagData.skills);
         this.character.expertise = this.character.expertise?.filter(ex => tagData.expertise != ex);
       })
+      this.customTagNames[i] = "";
     }
     if(tag){
       this.service.getTag(tag).subscribe((tagData: Tag) =>{
@@ -121,12 +133,16 @@ export class AppComponent {
       return;
     }
     localStorage.setItem("character", JSON.stringify(this.character));
+    localStorage.setItem("customTagNames", JSON.stringify(this.customTagNames));
+    localStorage.setItem("notes", JSON.stringify(this.notes))
     alert("Your character has been saved successfully")
   }
 
   load(){
     if(localStorage.getItem("character")){
       this.character = JSON.parse(localStorage.getItem("character")!);
+      this.customTagNames = JSON.parse(localStorage.getItem("customTagNames")!);
+      this.notes = JSON.parse(localStorage.getItem("notes")!);
       for(let i=0; i<this.character.tags.length; i++){
         this.tags[i] = this.character.tags[i];
       }
@@ -138,6 +154,8 @@ export class AppComponent {
       localStorage.clear();
       this.initCharacter();
       this.tags = ["",""]
+      this.customTagNames = ["",""]
+      this.notes = "";
     }
   }
 
@@ -205,15 +223,126 @@ export class AppComponent {
     this.advantage = 0;
     this.disadvantage = 0;
     this.results = [];
-    this.beingRolled = ""
+    this.beingRolled = "";
+    this.successType = "";
+    this.expertiseEligible = false;
+    this.rerollEligible = false;
+    this.counts = [0,0,0,0,0,0];
+    this.rerollResults = [];
+    this.allOrNothingEligible = false;
+    this.newSuccessType = "";
+    this.allOrNothingResults = [];
   }
 
   roll(){
     this.results = [];
+    this.rerollResults = [];
+    this.allOrNothingEligible = false;
+    this.allOrNothingResults = [];
+    this.newSuccessType = "";
     let res = this.service.rollDice(this.dicepool);
     for(let i=0; i<res.length; i++){
       this.results.push("assets/img/"+res[i]+".jpg");
     }
+    this.calculateSuccess(res);    
+  }
+
+  calculateSuccess(res: number[]){
+    let counts = [0,0,0,0,0,0];
+    res.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+    this.counts = counts;
+    if(this.counts.filter(x => x>4).length>0)
+      this.successType = "Impossible Success!"
+    else if(this.counts.filter(x => x>3).length>0)
+      this.successType = "Extreme Success!"
+    else if(this.counts.filter(x => x>2).length>0)
+      this.successType = "Critical Success!"
+    else if(this.counts.filter(x => x>1).length>0)
+      this.successType = "Basic Success!"
+    else
+      this.successType = "No Success"
+    this.expertiseEligible = this.counts.filter(x => x===1).length>0;
+    this.rerollEligible = this.counts.filter(x => x===1).length>0 && this.counts.filter(x => x>1).length>0;
+  }
+
+  reroll(){
+    let rerollCount = 0;
+    for(let i=this.counts.length-1; i>=0; i--){
+      if(this.counts[i]===1){
+        for(let j=this.results.length-1; j>=0; j--){
+          if(this.results[j].includes(i+"")){
+            this.results.splice(j,1);
+            rerollCount++;
+          }
+        }
+      }
+    }
+    this.rerollResults = [];
+    let res = this.service.rollDice(rerollCount);
+    for(let i=0; i<res.length; i++){
+      this.rerollResults.push("assets/img/"+res[i]+".jpg");
+    }
+    this.successType = "";
+    this.rerollEligible = false;
+    this.expertiseEligible = false;
+
+    let newResultsString = this.results.concat(this.rerollResults);
+    let newResults: number[] = [];
+    newResultsString.forEach(str => {newResults.push(parseInt(str.substring(11,12)))})
+    newResults.sort();
+    let newCounts = [0,0,0,0,0,0];
+    newResults.forEach(function (x) { newCounts[x] = (newCounts[x] || 0) + 1; });
+
+    let newSuccess: boolean = false;
+    for(let i=0; i<newCounts.length; i++){
+      if(newCounts[i]!==1 && newCounts[i]>this.counts[i]){
+        newSuccess = true;
+      }
+    }
+
+    if(newCounts.filter(x => x>4).length>0 && newSuccess)
+      this.newSuccessType = "New Success - Impossible Success!"
+    else if(newCounts.filter(x => x>3).length>0 && newSuccess)
+      this.newSuccessType = "New Success - Extreme Success!"
+    else if(newCounts.filter(x => x>2).length>0 && newSuccess)
+      this.newSuccessType = "New Success - Critical Success!"
+    else if(newCounts.filter(x => x>1).length>0 && newSuccess)
+      this.newSuccessType = "New Success - Basic Success!"
+    else
+      this.newSuccessType = "No New Success"
+
+    this.allOrNothingEligible = newCounts.filter(x => x===1).length>0 && newSuccess;
+  }
+
+  allOrNothing(){
+    this.allOrNothingEligible = false;
+
+    let newResultsString = this.results.concat(this.rerollResults);
+    let newResults: number[] = [];
+    newResultsString.forEach(str => {newResults.push(parseInt(str.substring(11,12)))})
+    newResults.sort();
+    let newCounts = [0,0,0,0,0,0];
+    newResults.forEach(function (x) { newCounts[x] = (newCounts[x] || 0) + 1; });
+
+    let rerollCount = 0;
+    for(let i=newCounts.length-1; i>=0; i--){
+      if(newCounts[i]===1){
+        for(let j=this.rerollResults.length-1; j>=0; j--){
+          if(this.rerollResults[j].includes(i+"")){
+            this.rerollResults.splice(j,1);
+            rerollCount++;
+          }
+        }
+      }
+    }
+
+    this.allOrNothingResults = [];
+    this.newSuccessType = "";
+    let res = this.service.rollDice(rerollCount);
+    for(let i=0; i<res.length; i++){
+      this.allOrNothingResults.push("assets/img/"+res[i]+".jpg");
+    }
+
   }
 
   recalculatePool(){
